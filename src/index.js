@@ -2,13 +2,19 @@ var express = require('express');
 var app = express();
 var cors = require('cors');
 var uuid = require('uuid/v4');
-app.use(cors());
-app.listen(3030, function () {
-  console.log('Listening on 3030')
-})
 
 const rooms = {};
 const MAX_GUEST = 2;
+
+setInterval(function(){
+  const expire = Date.now();
+  Object.keys(rooms).forEach(function(service){
+    const room = rooms[service];
+    if ((room.createdAt + 3600000) < expire) {
+      delete rooms[service];
+    }
+  });
+}, 60000);
 
 app.get('/:service/join', (req, res) => {
   const service = req.params.service;
@@ -28,10 +34,17 @@ app.get('/:service/join', (req, res) => {
     console.log("make new room", id);
     const newRoom = {
       id: id,
-      clients: []
+      clients: [],
+      createdAt: Date.now()
     };
     res.json(newRoom);
     newRoom.clients.push(req.query.id);
     rooms[service].push(newRoom);
   }
 });
+
+
+app.use(cors());
+app.listen(process.env.PORT || 3030, function () {
+  console.log('Listening on 3030')
+})
