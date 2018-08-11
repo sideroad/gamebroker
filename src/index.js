@@ -4,7 +4,6 @@ var cors = require('cors');
 var uuid = require('uuid/v4');
 
 const rooms = {};
-const MAX_GUEST = 2;
 
 setInterval(function(){
   const expire = Date.now();
@@ -21,7 +20,7 @@ app.get('/:service/join', (req, res) => {
   if (!rooms[service]) {
     rooms[service] = [];
   }
-  const room = rooms[service].find(room => room.clients.length < MAX_GUEST);
+  const room = rooms[service].find(room => room.clients.length < (req.query.max || 2));
   if (room) {
     console.log("find room", room);
     res.json({
