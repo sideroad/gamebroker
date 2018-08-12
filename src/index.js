@@ -15,6 +15,9 @@ setInterval(function(){
   });
 }, 60000);
 
+
+app.use(cors());
+
 app.get('/:service/join', (req, res) => {
   const service = req.params.service;
   if (!rooms[service]) {
@@ -43,7 +46,6 @@ app.get('/:service/join', (req, res) => {
 });
 
 
-app.use(cors());
 app.listen(process.env.PORT || 3030, function () {
   console.log('Listening on 3030')
 })
